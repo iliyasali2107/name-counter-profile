@@ -33,7 +33,8 @@ func Init(url string) Storage {
 	query := `CREATE TABLE IF NOT EXISTS urls (
 		id SERIAL PRIMARY KEY,
 		user_id SMALLINT,
-		url VARCHAR(255)
+		url VARCHAR(255),
+		active BOOLEAN
 	);`
 
 	_, err = conn.Exec(context.Background(), query)
@@ -64,4 +65,8 @@ func (s *storage) GetURL(userID int) (string, error) {
 	}
 
 	return url, nil
+}
+
+func (s *storage) SetActive(url string) error {
+	panic("TODO")
 }
