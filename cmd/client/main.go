@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"name-counter-profile/pkg/config"
+	"name-counter-url/pkg/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +19,7 @@ func main() {
 	}
 	routes := gin.Default()
 
-	routes.GET("/profile/:id", svc.GetURL)
+	routes.GET("/url/:id", svc.GetURL)
 
 	routes.Run(c.ClientPort)
 }

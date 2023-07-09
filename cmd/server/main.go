@@ -5,10 +5,10 @@ import (
 	"log"
 	"net"
 
-	"name-counter-profile/pkg/config"
-	"name-counter-profile/pkg/db"
-	"name-counter-profile/pkg/pb"
-	"name-counter-profile/pkg/service"
+	"name-counter-url/pkg/config"
+	"name-counter-url/pkg/db"
+	"name-counter-url/pkg/pb"
+	"name-counter-url/pkg/service"
 
 	"google.golang.org/grpc"
 )
@@ -32,7 +32,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterProfileServiceServer(grpcServer, srv)
+	pb.RegisterURLServiceServer(grpcServer, srv)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve: ", err)

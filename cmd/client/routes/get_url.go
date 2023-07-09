@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"name-counter-profile/pkg/pb"
+	"name-counter-url/pkg/pb"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetURL(ctx *gin.Context, client pb.ProfileServiceClient) {
+func GetURL(ctx *gin.Context, client pb.URLServiceClient) {
 	idStr := ctx.Param("id")
 	if idStr == "" {
 		ctx.JSON(http.StatusBadRequest, fmt.Errorf("bad request"))

@@ -1,4 +1,4 @@
-module name-counter-profile
+module name-counter-url
 
 go 1.20
 
