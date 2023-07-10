@@ -9,15 +9,17 @@ service URLService {
     rpc AddURL(AddURLRequest) returns (AddURLResponse) {}
     rpc GetURL(GetURLRequest) returns (GetURLResponse) {}
     rpc SetActiveUrl(SetActiveUrlRequest) returns (SetActiveUrlResponse) {}
+    rpc GetUserURLs(GetUserURLsRequest) returns (GetUserURLsResponse) {}
 }
 
 message AddURLRequest {
-    int64 id = 1;
+    int64 user_id = 1;
     string url = 2;
 }
 
 message AddURLResponse {
     int64 status = 1;
+    URL url = 2;
 }
 
 message GetURLRequest {
@@ -30,8 +32,8 @@ message GetURLResponse {
 }
 
 message SetActiveUrlRequest {
-    int64 urlID = 1;
-    int64 userID = 2;
+    int64 url_id = 1;
+    int64 user_id = 2;
 }
 
 message SetActiveUrlResponse {
@@ -47,11 +49,11 @@ message URL {
 
 
 message GetUserURLsRequest {
-    int64 userID = 1;
+    int64 user_id = 1;
 }
 
 
 message GetUserURLsResponse {
     int64 status = 1;
-    URL url = 2;
+    repeated URL url = 2;
 }

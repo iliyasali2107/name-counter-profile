@@ -11,7 +11,7 @@ import (
 )
 
 type Storage interface {
-	InsertURL(int64, string) (int64, error)
+	InsertURL(models.URL) (models.URL, error)
 	GetActiveURL(int64) (models.URL, error)
 	SetActive(int64) (int64, error)
 	SetNotActive(int64) (int64, error)
@@ -51,15 +51,15 @@ func Init(url string) Storage {
 	return &storage{conn}
 }
 
-func (s *storage) InsertURL(userID int64, url string) (int64, error) {
-	query := `INSERT INTO urls(user_id, url) VALUES($1, $2) RETURNING id`
-	var id int64
-	err := s.DB.QueryRow(context.Background(), query, userID, url).Scan(&id)
+func (s *storage) InsertURL(url models.URL) (models.URL, error) {
+	query := `INSERT INTO urls(user_id, url) VALUES($1, $2) RETURNING id, user_id, url`
+	var res models.URL
+	err := s.DB.QueryRow(context.Background(), query, url.UserID, url.URL).Scan(&res.ID, &res.UserID, &res.URL)
 	if err != nil {
-		return 0, fmt.Errorf("failed to insert url %w", err)
+		return models.URL{}, fmt.Errorf("failed to insert url %w", err)
 	}
 
-	return id, nil
+	return res, nil
 }
 
 func (s *storage) GetActiveURL(userID int64) (models.URL, error) {
@@ -89,7 +89,7 @@ func (s *storage) GetURL(userID int64) (models.URL, error) {
 	var url models.URL
 	err := s.DB.QueryRow(context.Background(), query, userID).Scan(&url.ID, &url.UserID, &url.URL)
 	if err != nil {
-		return models.URL{}, fmt.Errorf("failed to get url: %w", err)
+		return models.URL{}, err
 	}
 
 	return url, nil
@@ -115,6 +115,11 @@ func (s *storage) GetUserURLs(userID int64) ([]models.URL, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if !rows.Next() {
+		return nil, pgx.ErrNoRows
+	}
+
 	for rows.Next() {
 		var url models.URL
 		err := rows.Scan(&url.ID, &url.UserID, &url.URL)
