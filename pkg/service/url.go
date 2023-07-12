@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 	"net/http"
-
-	"name-counter-url/pkg/db"
-	"name-counter-url/pkg/models"
-	"name-counter-url/pkg/pb"
+	"url-redirecter-url/pkg/db"
+	"url-redirecter-url/pkg/models"
+	"url-redirecter-url/pkg/pb"
 
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc/codes"

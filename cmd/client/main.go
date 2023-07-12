@@ -2,8 +2,7 @@ package main
 
 import (
 	"log"
-
-	"name-counter-url/pkg/config"
+	"url-redirecter-url/pkg/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +18,10 @@ func main() {
 	}
 	routes := gin.Default()
 
-	routes.GET("/url/:id", svc.GetURL)
+	routes.GET("/urls/:id", svc.GetURL)
+	routes.GET("/urls", svc.GetUserURLs)
+	routes.POST("/urls", svc.AddURL)
+	routes.POST("/urls/activate", svc.SetActiveURL)
 
 	routes.Run(c.ClientPort)
 }

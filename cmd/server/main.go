@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net"
-
-	"name-counter-url/pkg/config"
-	"name-counter-url/pkg/db"
-	"name-counter-url/pkg/pb"
-	"name-counter-url/pkg/service"
+	"url-redirecter-url/pkg/config"
+	"url-redirecter-url/pkg/db"
+	"url-redirecter-url/pkg/pb"
+	"url-redirecter-url/pkg/service"
 
 	"google.golang.org/grpc"
 )

@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"name-counter-url/pkg/pb"
+	"url-redirecter-url/pkg/pb"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
@@ -43,14 +42,15 @@ func GetURL(ctx *gin.Context, client pb.URLServiceClient) {
 }
 
 type SetActiveRequestBody struct {
-	id int64
+	Id int64 `json:"id"`
 }
 
 func SetActiveURL(ctx *gin.Context, client pb.URLServiceClient) {
 	var reqBody SetActiveRequestBody
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, "id is incorrect form")
+		ctx.JSON(http.StatusBadRequest, "id is incorrect form"+err.Error())
+		return
 	}
 
 	userId, ok := ctx.Get("userId")
@@ -60,7 +60,7 @@ func SetActiveURL(ctx *gin.Context, client pb.URLServiceClient) {
 	}
 
 	req := &pb.SetActiveUrlRequest{
-		UrlId:  reqBody.id,
+		UrlId:  reqBody.Id,
 		UserId: userId.(int64),
 	}
 
@@ -84,7 +84,7 @@ func SetActiveURL(ctx *gin.Context, client pb.URLServiceClient) {
 }
 
 type AddURLRequestBody struct {
-	Url string
+	Url string `json:"url"`
 }
 
 func AddURL(ctx *gin.Context, client pb.URLServiceClient) {
@@ -117,7 +117,7 @@ func AddURL(ctx *gin.Context, client pb.URLServiceClient) {
 }
 
 type GetUserUrlsRequestBody struct {
-	UserId int64
+	UserId int64 `json:"user_id"`
 }
 
 func GetUserURLs(ctx *gin.Context, client pb.URLServiceClient) {

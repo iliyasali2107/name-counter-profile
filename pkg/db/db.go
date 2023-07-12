@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-
-	"name-counter-url/pkg/models"
+	"url-redirecter-url/pkg/models"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -52,9 +51,9 @@ func Init(url string) Storage {
 }
 
 func (s *storage) InsertURL(url models.URL) (models.URL, error) {
-	query := `INSERT INTO urls(user_id, url) VALUES($1, $2) RETURNING id, user_id, url`
+	query := `INSERT INTO urls(user_id, url, active) VALUES($1, $2, $3) RETURNING id, user_id, url, active`
 	var res models.URL
-	err := s.DB.QueryRow(context.Background(), query, url.UserID, url.URL).Scan(&res.ID, &res.UserID, &res.URL)
+	err := s.DB.QueryRow(context.Background(), query, url.UserID, url.URL, url.Active).Scan(&res.ID, &res.UserID, &res.URL, &res.Active)
 	if err != nil {
 		return models.URL{}, fmt.Errorf("failed to insert url %w", err)
 	}
@@ -63,9 +62,9 @@ func (s *storage) InsertURL(url models.URL) (models.URL, error) {
 }
 
 func (s *storage) GetActiveURL(userID int64) (models.URL, error) {
-	query := `SELECT id, url FROM urls WHERE user_id = $1 AND active = true`
+	query := `SELECT * FROM urls WHERE user_id = $1 AND active = true`
 	var url models.URL
-	err := s.DB.QueryRow(context.Background(), query, userID).Scan(&url.ID, &url.UserID, &url.URL)
+	err := s.DB.QueryRow(context.Background(), query, userID).Scan(&url.ID, &url.UserID, &url.URL, &url.Active)
 	if err != nil {
 		return models.URL{}, fmt.Errorf("failed to get url: %w", err)
 	}
@@ -74,7 +73,7 @@ func (s *storage) GetActiveURL(userID int64) (models.URL, error) {
 }
 
 func (s *storage) SetActive(urlID int64) (int64, error) {
-	query := `UPDATE urls SET active = true WHERE id = $1;`
+	query := `UPDATE urls SET active = true WHERE id = $1 RETURNING id;`
 	var id int64
 	err := s.DB.QueryRow(context.Background(), query, urlID).Scan(&id)
 	if err != nil {
@@ -84,10 +83,10 @@ func (s *storage) SetActive(urlID int64) (int64, error) {
 	return id, nil
 }
 
-func (s *storage) GetURL(userID int64) (models.URL, error) {
-	query := `SELECT * FROM urls WHERE user_id = $1`
+func (s *storage) GetURL(id int64) (models.URL, error) {
+	query := `SELECT * FROM urls WHERE id = $1`
 	var url models.URL
-	err := s.DB.QueryRow(context.Background(), query, userID).Scan(&url.ID, &url.UserID, &url.URL)
+	err := s.DB.QueryRow(context.Background(), query, id).Scan(&url.ID, &url.UserID, &url.URL, &url.Active)
 	if err != nil {
 		return models.URL{}, err
 	}
@@ -96,7 +95,7 @@ func (s *storage) GetURL(userID int64) (models.URL, error) {
 }
 
 func (s *storage) SetNotActive(urlID int64) (int64, error) {
-	query := `UPDATE urls SET active = false WHERE id = $1 AND active = false`
+	query := `UPDATE urls SET active = false WHERE id = $1 AND active = true RETURNING id;`
 	var id int64
 	err := s.DB.QueryRow(context.Background(), query, urlID).Scan(&id)
 	if err != nil {
