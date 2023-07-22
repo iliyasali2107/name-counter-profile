@@ -10,6 +10,7 @@ import (
 	"url-redirecter-url/pkg/service"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -25,13 +26,14 @@ func main() {
 		log.Fatalln("Failed to listening")
 	}
 
-	fmt.Println("Auth service is on: ", c.Port)
+	fmt.Println("Url service is on: ", c.Port)
 
 	srv := service.NewService(storage)
 
 	grpcServer := grpc.NewServer()
 
 	pb.RegisterURLServiceServer(grpcServer, srv)
+	reflection.Register(grpcServer)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve: ", err)

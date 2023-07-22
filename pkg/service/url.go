@@ -36,7 +36,6 @@ func (srv *service) AddURL(ctx context.Context, req *pb.AddURLRequest) (*pb.AddU
 		UserID: req.UserId,
 		URL:    req.Url,
 	}
-
 	url, err := srv.S.InsertURL(url)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "something unexpected happened")
@@ -67,7 +66,6 @@ func (srv *service) GetURL(ctx context.Context, req *pb.GetURLRequest) (*pb.GetU
 }
 
 func (srv *service) SetActiveURL(ctx context.Context, req *pb.SetActiveUrlRequest) (*pb.SetActiveUrlResponse, error) {
-
 	activeURL, err := srv.S.GetActiveURL(req.UrlId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -88,7 +86,6 @@ func (srv *service) SetActiveURL(ctx context.Context, req *pb.SetActiveUrlReques
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to set active url: %v", err)
 	}
-
 	_, err = srv.S.SetNotActive(activeURL.ID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to set unactive url: %v", err)

@@ -106,7 +106,7 @@ func (s *storage) SetNotActive(urlID int64) (int64, error) {
 }
 
 func (s *storage) GetUserURLs(userID int64) ([]models.URL, error) {
-	query := `SELECT * FROM urls where user_id = $1`
+	query := `SELECT * FROM urls WHERE user_id = $1`
 
 	var urls []models.URL
 
@@ -115,18 +115,21 @@ func (s *storage) GetUserURLs(userID int64) ([]models.URL, error) {
 		return nil, err
 	}
 
-	if !rows.Next() {
-		return nil, pgx.ErrNoRows
-	}
+	hasRows := false
 
 	for rows.Next() {
 		var url models.URL
-		err := rows.Scan(&url.ID, &url.UserID, &url.URL)
+		err := rows.Scan(&url.ID, &url.UserID, &url.URL, &url.Active)
 		if err != nil {
 			return nil, err
 		}
 
 		urls = append(urls, url)
+		hasRows = true
+	}
+
+	if hasRows == false {
+		return nil, pgx.ErrNoRows
 	}
 
 	if err = rows.Err(); err != nil {
